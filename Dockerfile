@@ -1,8 +1,23 @@
 FROM ubuntu:14.04
+MAINTAINER frok
 
 # mkdirs
 RUN mkdir /home/downloads
 RUN mkdir /home/workspace
+RUN mkdir /etc/frok
+
+# add files from repo
+ADD /start.sh /start.sh
+RUN chmod 755 /start.sh
+
+# network configuration
+EXPOSE 27015 27016 27017 27018 27019 27020 27021 27022 8080 4848 22 80
+
+#environment configuration
+ENV LD_LIBRARY_PATH=/opt/opencv-2.4.9/static/lib/:$LD_LIBRARY_PATH
+
+#image user
+USER daemon
 
 # installing via apt-get
 RUN apt-get update
@@ -39,7 +54,6 @@ RUN cd /home/workspace && git clone --depth 1 https://github.com/dmedov/frok-dow
 # build frok-server
 RUN cd /home/workspace/frok-server/build && make CFG=debug CCFLAG+=-DNO_DAEMON CCFLAG+=-DFAST_SEARCH_ENABLED build
 RUN cd /home/workspace/frok-server/build && make CFG=release CCFLAG+=-DFAST_SEARCH_ENABLED build
-RUN mkdir /etc/frok
 RUN touch /etc/frok/frok.conf
 RUN echo "OUTPUT_FILE = /var/log/frok.log" > /etc/frok/frok.conf
 RUN echo "PHOTO_BASE_PATH = /home/faces/" >> /etc/frok/frok.conf
@@ -50,8 +64,14 @@ RUN ln -s /home/workspace/frok-server/build/build-debug/bin/FrokAgentApp /usr/bi
 
 # build frok-download server
 RUN cd /home/workspace/frok-download-server/ && mvn package
-RUN /opt/glassfish4/bin/asadmin start-domain domain1
-RUN /opt/glassfish4/bin/asadmin deploy --force --contextroot frok /home/workspace/frok-download-server/target/frok-1.0-SNAPSHOT
+RUN touch /etc/frok/frok.conf
+RUN echo "FROK_SERVER = 127.0.0.1:27015" > /etc/frok/frok.conf
+RUN echo "PHOTO_BASE_PATH = /home/faces/" >> /etc/frok/frok.conf
+RUN echo "TARGET_PHOTOS_PATH = /home/faces/" >> /etc/frok/frok.conf
+RUN chmod 664 /etc/frok -R
 
 # process clean up
 RUN rm /home/downloads -r
+
+# default action
+ENTRYPOINT /start.sh 0 27015
