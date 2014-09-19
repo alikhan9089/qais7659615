@@ -13,12 +13,6 @@ RUN chmod 755 /start.sh
 # network configuration
 EXPOSE 27015 27016 27017 27018 27019 27020 27021 27022 8080 4848 22 80
 
-#environment configuration
-ENV LD_LIBRARY_PATH=/opt/opencv-2.4.9/static/lib/:$LD_LIBRARY_PATH
-
-#image user
-USER daemon
-
 # installing via apt-get
 RUN apt-get update
 RUN apt-get -y dist-upgrade
