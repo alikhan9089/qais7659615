@@ -16,6 +16,7 @@ RUN apt-get install -y unzip
 RUN apt-get install -y wget
 RUN apt-get install -y default-jre
 RUN apt-get install -y default-jdk
+RUN apt-get install -y maven
 
 # dl with wget
 RUN wget -P /home/downloads/ download.java.net/glassfish/4.0/release/glassfish-4.0.zip
@@ -48,3 +49,9 @@ RUN ln -s /home/workspace/frok-server/build/build-release/bin/FrokAgentApp /usr/
 RUN ln -s /home/workspace/frok-server/build/build-debug/bin/FrokAgentApp /usr/bin/frokAgentDebug
 
 # build frok-download server
+RUN cd /home/workspace/frok-download-server/ && mvn package
+RUN /opt/glassfish4/bin/asadmin start-domain domain1
+RUN /opt/glassfish4/bin/asadmin deploy --force --contextroot frok /home/workspace/frok-download-server/target/frok-1.0-SNAPSHOT
+
+# process clean up
+RUN rm /home/downloads -r
