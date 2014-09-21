@@ -66,6 +66,3 @@ RUN chmod 664 /etc/frok -R
 
 # process clean up
 RUN rm /home/downloads -r
-
-# default action
-ENTRYPOINT /start.sh 0 27015
