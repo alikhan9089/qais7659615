@@ -59,9 +59,9 @@ RUN chmod 664 /etc/frok -R
 # build frok-download server
 RUN cd /home/workspace/frok-download-server/ && mvn package
 RUN touch /etc/frok/frok.conf
-RUN echo "FROK_SERVER = 127.0.0.1:27015" > /etc/frok/frok.conf
-RUN echo "PHOTO_BASE_PATH = /home/faces/" >> /etc/frok/frok.conf
-RUN echo "TARGET_PHOTOS_PATH = /home/faces/" >> /etc/frok/frok.conf
+RUN echo "FROK_SERVER = 127.0.0.1:27015" > /etc/frok/frok-ds.conf
+RUN echo "PHOTO_BASE_PATH = /home/faces/" >> /etc/frok/frok-ds.conf
+RUN echo "TARGET_PHOTOS_PATH = /home/faces/" >> /etc/frok/frok-ds.conf
 RUN chmod 664 /etc/frok -R
 
 # process clean up
